@@ -1,27 +1,27 @@
 ﻿using AutoMapper;
-using BankingSystem.IRepository;
-using BankingSystem.IServices;
-using BankingSystem.Models;
-using BankingSystem.ViewModels;
-using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
+using BankingSystem.Business.ViewModels;
+using BankingSystem.DataBase.Models;
+using BankingSystem.Repository.Repository.IRepository;
+using BankingSystem.Services.IServices;
 using System.Net;
-using static BankingSystem.EnumConstant.EnumConstant;
+using static BankingSystem.Business.EnumConstant.EnumConstant;
 
-namespace BankingSystem.Services
+namespace BankingSystem.Services.Services
 {
     public class BankTransactionService : IBankTransactionService
     {
         private readonly IBankTransactionRepo bankTransactionRepository;
         private readonly IBankAccountPostingRepo bankAccountPostingRepo;
         private readonly IBankAccountRepo bankAccountRepo;
+        private readonly IUnitOfWork unitOfWork;
         private readonly IMapper mapper;
 
-        public BankTransactionService(IBankTransactionRepo bankTransactionRepository, IBankAccountPostingRepo bankAccountPostingRepo, IBankAccountRepo bankAccountRepo, IMapper mapper)
+        public BankTransactionService(IBankTransactionRepo bankTransactionRepository, IBankAccountPostingRepo bankAccountPostingRepo, IBankAccountRepo bankAccountRepo, IUnitOfWork unitOfWork,IMapper mapper)
         {
             this.bankTransactionRepository = bankTransactionRepository;
             this.bankAccountPostingRepo = bankAccountPostingRepo;
             this.bankAccountRepo = bankAccountRepo;
+            this.unitOfWork = unitOfWork;
             this.mapper = mapper;
         }
         public async Task<JsonResponseModel<List<BankTransactionView>>> GetAllBankTransactions()
@@ -47,11 +47,30 @@ namespace BankingSystem.Services
         {
             var response = new JsonResponseModel<BankTransactionView>();
             try
-            {                
+            {
                 var bankTransaction = await bankTransactionRepository.GetBankTransactionById(id);
                 response.Result = mapper.Map<BankTransactionView>(bankTransaction);
                 response.Message = "Details of BankTransaction";
-                response.StatusCode = HttpStatusCode.OK;              
+                response.StatusCode = HttpStatusCode.OK;
+            }
+            catch (Exception ex)
+            {
+                response.HasError = true;
+                response.Message = ex.Message;
+                response.StatusCode = HttpStatusCode.InternalServerError;
+            }
+            return response;
+        }
+
+        public async Task<JsonResponseModel<List<BankTransactionView>>> GetBankTransactionByAccountId(Guid bankAccountId)
+        {
+            var response = new JsonResponseModel<List<BankTransactionView>>();
+            try
+            {
+                List<BankTransaction> bankTransaction = await bankTransactionRepository.GetBankTransactionByAccountId(bankAccountId);
+                response.Result = mapper.Map<List<BankTransactionView>>(bankTransaction);
+                response.Message = "Details of BankTransaction of Account";
+                response.StatusCode = HttpStatusCode.OK;
             }
             catch (Exception ex)
             {
@@ -91,6 +110,9 @@ namespace BankingSystem.Services
                         var bankTransaction = new BankTransaction
                         {
                             Id = Guid.NewGuid(),
+                            FirstName= bankAccountData.FirstName,
+                            MiddleName = bankAccountData.MiddleName,
+                            LastName = bankAccountData.LastName,
                             TransactionType = transactionType,
                             Category = categories[random.Next(categories.Count)],
                             Amount = amount,
@@ -100,6 +122,7 @@ namespace BankingSystem.Services
                         };
 
                         await bankTransactionRepository.AddBankTransaction(bankTransaction);
+                        await unitOfWork.SaveChangesAsync();
                         bankTransactions.Add(bankTransaction);
 
                         if (bankTransaction.Category == Category.BankInterest || bankTransaction.Category == Category.BankCharges)
@@ -110,6 +133,7 @@ namespace BankingSystem.Services
                                 BankTransationId_FK = bankTransaction.Id
                             };
                             await bankAccountPostingRepo.AddBankAccountPosting(bankAccountPosting);
+                            await unitOfWork.SaveChangesAsync();
                         }
                     }
 
@@ -167,6 +191,7 @@ namespace BankingSystem.Services
                     existingBankTransaction.BankAccount_FK = updatedBankTransaction.BankAccount_FK;
 
                     await bankTransactionRepository.UpdateBankTransaction(existingBankTransaction);
+                    await unitOfWork.SaveChangesAsync();
                     response.Result = true;
                     response.Message = "Account Transaction updated successfully";
                     response.StatusCode = HttpStatusCode.OK;
@@ -196,6 +221,7 @@ namespace BankingSystem.Services
                 else
                 {
                     await bankTransactionRepository.DeleteBankTransaction(bankTransactionToDelete);
+                    await unitOfWork.SaveChangesAsync();
                     response.Result = true;
                     response.Message = "Account Transaction deleted successfully";
                     response.StatusCode = HttpStatusCode.OK;

@@ -1,5 +1,5 @@
-﻿using BankingSystem.Models;
-using BankingSystem.ViewModels;
+﻿using BankingSystem.DataBase.Models;
+using BankingSystem.Business.ViewModels;
 
 namespace BankingSystem.IServices
 {

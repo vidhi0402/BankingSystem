@@ -1,5 +1,5 @@
-﻿using BankingSystem.Models;
-using BankingSystem.ViewModels;
+﻿using BankingSystem.DataBase.Models;
+using BankingSystem.Business.ViewModels;
 
 namespace BankingSystem.IServices
 {
@@ -8,6 +8,6 @@ namespace BankingSystem.IServices
         Task<JsonResponseModel<List<AccountTypeView>>> GetAllAccountTypes();
         Task<JsonResponseModel<AccountTypeView>> GetAccountType(Guid id);
         Task<JsonResponseModel<bool>> DeleteAccountType(Guid id);
-        Task<JsonResponseModel<bool>> UpdateAccountType(Guid id, Models.AccountType updatedAccountType);
+        Task<JsonResponseModel<bool>> UpdateAccountType(Guid id, DataBase.Models.AccountType updatedAccountType);
     }
 }

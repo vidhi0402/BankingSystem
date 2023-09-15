@@ -1,22 +1,22 @@
 ﻿using AutoMapper;
-using BankingSystem.IRepository;
-using BankingSystem.IServices;
-using BankingSystem.Models;
-using BankingSystem.ViewModels;
-using Microsoft.AspNetCore.Mvc;
-using static BankingSystem.EnumConstant.EnumConstant;
+using BankingSystem.Business.ViewModels;
+using BankingSystem.DataBase.Models;
+using BankingSystem.Repository.Repository.IRepository;
+using BankingSystem.Services.IServices;
 using System.Net;
 
-namespace BankingSystem.Services
+namespace BankingSystem.Services.Services
 {
     public class PaymentMethodService : IPaymentMethodService
     {
         private readonly IPaymentMethodRepo paymentRepository;
+        private readonly IUnitOfWork unitOfWork;
         private readonly IMapper mapper;
 
-        public PaymentMethodService(IPaymentMethodRepo paymentRepository, IMapper mapper)
+        public PaymentMethodService(IPaymentMethodRepo paymentRepository, IUnitOfWork unitOfWork,IMapper mapper)
         {
             this.paymentRepository = paymentRepository;
+            this.unitOfWork = unitOfWork;
             this.mapper = mapper;
         }
 
@@ -25,11 +25,11 @@ namespace BankingSystem.Services
             var response = new JsonResponseModel<List<PaymentMethodView>>();
             try
             {
-                List<Models.PaymentMethod> paymentMethods = await paymentRepository.GetAllPaymentMethods();
+                List<DataBase.Models.PaymentMethod> paymentMethods = await paymentRepository.GetAllPaymentMethods();
                 response.Result = mapper.Map<List<PaymentMethodView>>(paymentMethods);
                 response.Message = "List of PaymentMethods";
                 response.StatusCode = HttpStatusCode.OK;
-                
+
             }
             catch (Exception ex)
             {
@@ -45,7 +45,7 @@ namespace BankingSystem.Services
             var response = new JsonResponseModel<PaymentMethodView>();
             try
             {
-                Models.PaymentMethod paymentMethod = await paymentRepository.GetPaymentMethodById(id);
+                DataBase.Models.PaymentMethod paymentMethod = await paymentRepository.GetPaymentMethodById(id);
                 response.Result = mapper.Map<PaymentMethodView>(paymentMethod);
                 response.Message = "Details of Payment";
                 response.StatusCode = HttpStatusCode.OK;
@@ -74,11 +74,12 @@ namespace BankingSystem.Services
                 {
                     existingPaymentMethod.Name = updatedPaymentMethod.Name;
                     await paymentRepository.UpdatePaymentMethod(existingPaymentMethod);
+                    await unitOfWork.SaveChangesAsync();
                     response.Result = true;
                     response.Message = "Payment type updated successfully";
                     response.StatusCode = HttpStatusCode.OK;
                 }
-               
+
             }
             catch (Exception ex)
             {
@@ -102,6 +103,7 @@ namespace BankingSystem.Services
                     response.StatusCode = HttpStatusCode.NotFound;
                 }
                 await paymentRepository.DeletePaymentMethod(paymentMethodToDelete);
+                await unitOfWork.SaveChangesAsync();
                 response.Result = true;
                 response.Message = "Payment type deleted successfully";
                 response.StatusCode = HttpStatusCode.OK;

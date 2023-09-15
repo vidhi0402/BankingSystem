@@ -1,21 +1,22 @@
 ﻿using AutoMapper;
-using BankingSystem.IRepository;
-using BankingSystem.IServices;
-using BankingSystem.Models;
-using BankingSystem.ViewModels;
-using Microsoft.AspNetCore.Mvc;
+using BankingSystem.Business.ViewModels;
+using BankingSystem.DataBase.Models;
+using BankingSystem.Repository.Repository.IRepository;
+using BankingSystem.Services.IServices;
 using System.Net;
 
-namespace BankingSystem.Services
+namespace BankingSystem.Services.Services
 {
     public class BankAccountService : IBankAccountService
     {
         private readonly IBankAccountRepo bankAccountRepository;
+        private readonly IUnitOfWork unitOfWork;
         private readonly IMapper mapper;
 
-        public BankAccountService(IBankAccountRepo bankAccountRepository, IMapper mapper)
+        public BankAccountService(IBankAccountRepo bankAccountRepository,IUnitOfWork unitOfWork,IMapper mapper)
         {
             this.bankAccountRepository = bankAccountRepository;
+            this.unitOfWork = unitOfWork;
             this.mapper = mapper;
         }
         public async Task<JsonResponseModel<List<BankAccountView>>> GetAllBankAccounts()
@@ -78,6 +79,7 @@ namespace BankingSystem.Services
                         AccountType_FK = accountType.Id
                     };
                     await bankAccountRepository.AddBankAccount(bankAccount);
+                    await unitOfWork.SaveChangesAsync();
                     bankAccounts.Add(bankAccount);
                 }
                 response.Result = mapper.Map<List<BankAccountView>>(bankAccounts);
@@ -117,6 +119,7 @@ namespace BankingSystem.Services
                     existingBankAccount.ClosingDate = updatedBankAccount.ClosingDate;
                     existingBankAccount.AccountType_FK = updatedBankAccount.AccountType_FK;
                     await bankAccountRepository.UpdateBankAccount(existingBankAccount);
+                    await unitOfWork.SaveChangesAsync();
                     response.Result = true;
                     response.Message = "Account updated successfully";
                     response.StatusCode = HttpStatusCode.OK;
@@ -146,6 +149,7 @@ namespace BankingSystem.Services
                 else
                 {
                     await bankAccountRepository.DeleteBankAccount(bankAccountToDelete);
+                    await unitOfWork.SaveChangesAsync();
                     response.Result = true;
                     response.Message = "Account deleted successfully";
                     response.StatusCode = HttpStatusCode.OK;

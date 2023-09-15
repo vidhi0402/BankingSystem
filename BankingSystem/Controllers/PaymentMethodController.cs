@@ -1,10 +1,7 @@
-﻿using BankingSystem.IRepository;
-using Microsoft.AspNetCore.Http;
+﻿using BankingSystem.Business.ViewModels;
+using BankingSystem.DataBase.Models;
+using BankingSystem.Services.IServices;
 using Microsoft.AspNetCore.Mvc;
-using BankingSystem.Models;
-using BankingSystem.IServices;
-using BankingSystem.ViewModels;
-using BankingSystem.Services;
 
 namespace BankingSystem.Controllers
 {
@@ -14,37 +11,33 @@ namespace BankingSystem.Controllers
     {
         private readonly IPaymentMethodService paymentMethodService;
         public PaymentMethodController(IPaymentMethodService paymentMethodService)
-        { 
+        {
             this.paymentMethodService = paymentMethodService;
         }
         [HttpGet]
         public async Task<IActionResult> GetAllPaymentMethods()
         {
-            var response = new JsonResponseModel<List<PaymentMethodView>>();
-            response = await paymentMethodService.GetAllPaymentMethods();
+            JsonResponseModel<List<PaymentMethodView>> response = await paymentMethodService.GetAllPaymentMethods();
             return Ok(response);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetPaymentMethod(Guid id)
         {
-            var response = new JsonResponseModel<PaymentMethodView>();
-            response = await paymentMethodService.GetPaymentMethod(id);
-            return Ok(response);          
+            JsonResponseModel<PaymentMethodView> response = await paymentMethodService.GetPaymentMethod(id);
+            return Ok(response);
         }
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdatePaymentMethod(Guid id, PaymentMethod updatedPaymentMethod)
         {
-            var response = new JsonResponseModel<bool>();
-            response = await paymentMethodService.UpdatePaymentMethod(id, updatedPaymentMethod);
+            JsonResponseModel<bool> response = await paymentMethodService.UpdatePaymentMethod(id, updatedPaymentMethod);
             return Ok(response);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePaymentMethod(Guid id)
         {
-            var response = new JsonResponseModel<bool>();
-            response = await paymentMethodService.DeletePaymentMethod(id);
+            JsonResponseModel<bool> response = await paymentMethodService.DeletePaymentMethod(id);
             return Ok(response);
         }
     }

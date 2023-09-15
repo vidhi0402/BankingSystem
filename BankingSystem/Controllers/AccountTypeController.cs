@@ -1,6 +1,6 @@
-﻿using BankingSystem.IServices;
-using BankingSystem.Models;
-using BankingSystem.ViewModels;
+﻿using BankingSystem.DataBase.Models;
+using BankingSystem.Services.IServices;
+using BankingSystem.Business.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BankingSystem.Controllers
@@ -19,32 +19,28 @@ namespace BankingSystem.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllAccountTypes()
         {
-            var response = new JsonResponseModel<List<AccountTypeView>>();
-            response = await accountTypeService.GetAllAccountTypes();
+            JsonResponseModel<List<AccountTypeView>> response = await accountTypeService.GetAllAccountTypes();
             return Ok(response);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetAccountType(Guid id)
         {
-            var response = new JsonResponseModel<AccountTypeView>();
-            response = await accountTypeService.GetAccountType(id);
+            JsonResponseModel<AccountTypeView> response = await accountTypeService.GetAccountType(id);
             return Ok(response);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAccountType(Guid id, AccountType updatedAccountType)
         {
-            var response = new JsonResponseModel<bool>();
-            response = await accountTypeService.UpdateAccountType(id, updatedAccountType);
+            JsonResponseModel<bool> response = await accountTypeService.UpdateAccountType(id, updatedAccountType);
             return Ok(response);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAccountType(Guid id)
         {
-            var response = new JsonResponseModel<bool>();
-            response = await accountTypeService.DeleteAccountType(id);
+            JsonResponseModel<bool> response = await accountTypeService.DeleteAccountType(id);
             return Ok(response);
         }
 

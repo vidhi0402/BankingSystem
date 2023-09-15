@@ -1,32 +1,36 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using static BankingSystem.EnumConstant.EnumConstant;
+using static BankingSystem.Business.EnumConstant.EnumConstant;
 
-namespace BankingSystem.ViewModels
+namespace BankingSystem.Business.ViewModels
 {
-    public class ViewBaseClassForId
+    public class IdEntityBaseView
     {
         public Guid Id { get; set; }
     }
-    public class ViewBaseClassForName : ViewBaseClassForId
+    public class NameEntityBaseView : IdEntityBaseView
     {
         public string Name { get; set; }
     }
-    // AccountTypeView.cs
-    public class AccountTypeView : ViewBaseClassForName
-    { }
 
-    // PaymentMethodView.cs
-    public class PaymentMethodView : ViewBaseClassForName
-    { }
-
-    // BankAccountView.cs
-    public class BankAccountView : ViewBaseClassForId
-    {
+    public class PersonEntityView : IdEntityBaseView
+    { 
         public string FirstName { get; set; }
         public string MiddleName { get; set; }
         public string LastName { get; set; }
+    }
+
+    // AccountTypeView.cs
+    public class AccountTypeView : NameEntityBaseView
+    { }
+
+    // PaymentMethodView.cs
+    public class PaymentMethodView : NameEntityBaseView
+    { }
+
+    // BankAccountView.cs
+    public class BankAccountView : PersonEntityView
+    {
         public string AccountNumber { get; set; }
         public DateTime OpeningDate { get; set; }
         public DateTime? ClosingDate { get; set; }
@@ -35,7 +39,7 @@ namespace BankingSystem.ViewModels
     }
 
     // BankTransactionView.cs
-    public class BankTransactionView : ViewBaseClassForId
+    public class BankTransactionView : PersonEntityView
     {
         public TransactionType TransactionType { get; set; }
         public Category Category { get; set; }
@@ -49,7 +53,7 @@ namespace BankingSystem.ViewModels
     }
 
     // BankAccountPostingView.cs
-    public class BankAccountPostingView : ViewBaseClassForId
+    public class BankAccountPostingView : IdEntityBaseView
     {
         public Guid BankTransationId_FK { get; set; }
     }

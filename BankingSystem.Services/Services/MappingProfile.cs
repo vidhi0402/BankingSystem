@@ -1,15 +1,15 @@
 ﻿using AutoMapper;
-using BankingSystem.Models;
-using BankingSystem.ViewModels;
+using BankingSystem.Business.ViewModels;
+using BankingSystem.DataBase.Models;
 
-namespace BankingSystem.Services
+namespace BankingSystem.Services.Services
 {
     public class MappingProfile : Profile
     {
-        public MappingProfile() 
+        public MappingProfile()
         {
-            CreateMap<BaseClassForId, ViewBaseClassForId>().ReverseMap();
-            CreateMap<BaseClassForName, ViewBaseClassForName>().ReverseMap();
+            CreateMap<IdEntityBase, IdEntityBaseView>().ReverseMap();
+            CreateMap<NameEntityBase, NameEntityBaseView>().ReverseMap();
             CreateMap<AccountType, AccountTypeView>().ReverseMap();
             CreateMap<PaymentMethod, PaymentMethodView>().ReverseMap();
             CreateMap<BankAccount, BankAccountView>().ReverseMap();

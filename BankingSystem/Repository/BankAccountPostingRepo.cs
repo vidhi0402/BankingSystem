@@ -1,7 +1,6 @@
-﻿using AutoMapper;
+﻿using BankingSystem.DataBase;
+using BankingSystem.DataBase.Models;
 using BankingSystem.IRepository;
-using BankingSystem.Models;
-using BankingSystem.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace BankingSystem.Repository
@@ -13,7 +12,7 @@ namespace BankingSystem.Repository
         public BankAccountPostingRepo(ApplicationDbContext dbContext)
         {
             this.dbContext = dbContext;
-        }       
+        }
         public async Task<List<BankAccountPosting>> GetAllBankAccountPostings()
         {
             List<BankAccountPosting> result = await dbContext.BankAccountPostings.ToListAsync();
@@ -27,7 +26,7 @@ namespace BankingSystem.Repository
         {
             await dbContext.BankAccountPostings.AddAsync(bankAccountPosting);
             await dbContext.SaveChangesAsync();
-        }       
+        }
         public async Task DeleteBankAccountPosting(BankAccountPosting bankAccountPostingToDelete)
         {
             dbContext.BankAccountPostings.Remove(bankAccountPostingToDelete);

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
+using BankingSystem.DataBase;
+using BankingSystem.DataBase.Models;
 using BankingSystem.IRepository;
-using BankingSystem.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace BankingSystem.Repository

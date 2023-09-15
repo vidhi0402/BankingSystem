@@ -1,9 +1,7 @@
-﻿using BankingSystem.IRepository;
+﻿using BankingSystem.DataBase;
+using BankingSystem.DataBase.Models;
+using BankingSystem.IRepository;
 using Microsoft.EntityFrameworkCore;
-using BankingSystem.Models;
-using Microsoft.Identity.Client;
-using AutoMapper;
-using BankingSystem.ViewModels;
 
 namespace BankingSystem.Repository
 {
